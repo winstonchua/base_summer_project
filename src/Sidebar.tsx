@@ -1,9 +1,7 @@
 // src/Sidebar.tsx
 import React from 'react';
 
-const categories = ['Dev', 'NFT', 'DeFi', 'IRL Events'];
-
-const Sidebar = ({ selectedCategories, onCategoryChange }) => {
+const Sidebar = ({ selectedCategories, onCategoryChange, categories }) => {
   return (
     <div style={styles.sidebar}>
       <h3>Categories</h3>

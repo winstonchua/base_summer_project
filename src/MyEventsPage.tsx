@@ -1,22 +1,35 @@
-// src/Content.tsx
+// src/MyEventsPage.tsx
 import React, { useState } from 'react';
+import { useAccount } from 'wagmi';
 import EventModal from './EventModal';
 
-const Content = ({ selectedCategories, items, onDeleteItem, currentUserAddress, isAdmin }) => {
+const MyEventsPage = ({ items, onDeleteItem, currentUserAddress, isAdmin }) => {
+  const { address, isConnected } = useAccount();
   const [selectedEvent, setSelectedEvent] = useState(null);
 
-  const filteredItems = selectedCategories.length === 0 ? items : items.filter(item => selectedCategories.includes(item.category));
+  if (!isConnected) {
+    return <div style={styles.message}>Please connect your wallet to view your events.</div>;
+  }
+
+  const myItems = items.filter(item => item.owner === address);
+
+  if (myItems.length === 0) {
+    return <div style={styles.message}>You have no events.</div>;
+  }
 
   return (
-    <div style={styles.content}>
-      {filteredItems.map((item, index) => (
-        <div key={index} style={styles.itemBox} onClick={() => setSelectedEvent(item)}>
-          <img src={item.image} alt={item.name} style={styles.itemImage} />
-          <h3 style={styles.itemTitle}>{item.name}</h3>
-          <p style={styles.itemDescription}>{item.description}</p>
-          <p style={styles.itemOwner}>Owner: {item.owner}</p>
-        </div>
-      ))}
+    <div style={{ padding: '20px' }}>
+      <h2>My Events</h2>
+      <div style={styles.content}>
+        {myItems.map((item, index) => (
+          <div key={index} style={styles.itemBox} onClick={() => setSelectedEvent(item)}>
+            <img src={item.image} alt={item.name} style={styles.itemImage} />
+            <h3 style={styles.itemTitle}>{item.name}</h3>
+            <p style={styles.itemDescription}>{item.description}</p>
+            <p style={styles.itemOwner}>Owner: {item.owner}</p>
+          </div>
+        ))}
+      </div>
       <EventModal
         event={selectedEvent}
         onClose={() => setSelectedEvent(null)}
@@ -30,6 +43,12 @@ const Content = ({ selectedCategories, items, onDeleteItem, currentUserAddress, 
 };
 
 const styles = {
+  message: {
+    padding: '20px',
+    textAlign: 'center',
+    fontSize: '18px',
+    color: '#555',
+  },
   content: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -52,8 +71,7 @@ const styles = {
   },
   itemImage: {
     width: '100%',
-    height: '150px',
-    objectFit: 'cover',
+    height: 'auto',
     borderRadius: '5px',
   },
   itemTitle: {
@@ -86,4 +104,4 @@ const styles = {
   },
 };
 
-export default Content;
+export default MyEventsPage;

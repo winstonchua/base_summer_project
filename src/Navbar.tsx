@@ -19,6 +19,8 @@ const Navbar = ({ isAdmin }) => {
       </div>
       <div style={{ display: 'flex', gap: '20px', marginLeft: '40px', fontFamily: 'Arial, sans-serif' }}>
         <Link to="/" style={{ color: '#fff', textDecoration: 'none', fontSize: '16px' }}>Home</Link>
+        <Link to="/deploy" style={{ color: '#fff', textDecoration: 'none', fontSize: '16px' }}>Deploy</Link>
+        <Link to="/myevents" style={{ color: '#fff', textDecoration: 'none', fontSize: '16px' }}>Your Events</Link>
         {isAdmin && <Link to="/admin" style={{ color: '#fff', textDecoration: 'none', fontSize: '16px' }}>Admin</Link>}
       </div>
       <div style={{ display: 'flex', alignItems: 'center' }}>
