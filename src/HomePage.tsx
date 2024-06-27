@@ -1,6 +1,7 @@
 // src/HomePage.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -11,6 +12,7 @@ const HomePage = ({ isAdmin, onWhitelistAdmin }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get('http://localhost:5000/events')
@@ -47,6 +49,10 @@ const HomePage = ({ isAdmin, onWhitelistAdmin }) => {
       .catch(error => console.error('Error deleting item:', error));
   };
 
+  const handleItemClick = (eventId) => {
+    navigate(`/event/${eventId}`);
+  };
+
   return (
     <div style={styles.container}>
       <Sidebar
@@ -60,6 +66,7 @@ const HomePage = ({ isAdmin, onWhitelistAdmin }) => {
         onDeleteItem={handleDeleteItem}
         currentUserAddress={address}
         isAdmin={isAdmin}
+        onItemClick={handleItemClick}
       />
     </div>
   );

@@ -2,12 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './HomePage';
-import MyEventsPage from './MyEventsPage';
+import EventDetailsPage from './EventDetailsPage';
 import AdminPage from './AdminPage';
-import { useAccount } from 'wagmi';
 import DeployERC721 from './DeployERC721';
+import MyEventsPage from './MyEventsPage';
 import Layout from './Layout';
 import axios from 'axios';
+import BasicTransaction from './BasicTransaction';
+import { useAccount } from 'wagmi';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import DeployPoapPage from './DeployPoapPage';
+import MintPoapPage from './MintPoapPage';
+import ProfilePage from './ProfilePage';
 
 const App = () => {
   const { address } = useAccount();
@@ -65,17 +71,20 @@ const App = () => {
             }
           />
           <Route
-            path="/myevents"
+            path="/event/:eventId"
             element={
-              <MyEventsPage
-                items={items}
-                onDeleteItem={handleDeleteItem}
+              <EventDetailsPage
                 currentUserAddress={address}
                 isAdmin={isAdmin}
+                onDelete={handleDeleteItem}
               />
             }
           />
+          <Route path="/deploy-poap/:eventId" element={<DeployPoapPage />} />
+          <Route path="/mint-poap/:poapContractAddress/:eventId/:poapId/:nonce" element={<MintPoapPage />} />
           <Route path="/deploy" element={<DeployERC721 />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/yourevents" element={<MyEventsPage />} />
           <Route
             path="/admin"
             element={isAdmin ? <AdminPage onAddItem={handleAddItem} onWhitelistAdmin={handleWhitelistAdmin} /> : <Navigate to="/" />}

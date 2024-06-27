@@ -89,13 +89,13 @@ export function BlackCreateWalletButton({ height = 66, width = 200 }) {
         justifyContent: 'center',
         alignItems: 'center',
         boxSizing: 'border-box',
-        backgroundColor: '#000000',
+        backgroundColor: '#ffffff',
         height: buttonHeight - GRADIENT_BORDER_WIDTH * 2,
         width: buttonWidth - GRADIENT_BORDER_WIDTH * 2,
         fontFamily: 'Arial, sans-serif',
         fontWeight: 'bold',
         fontSize: 18,
-        color: '#ffffff', // Ensure text color is set to white for visibility
+        color: '#000000', // Ensure text color is set to white for visibility
         borderRadius: buttonHeight / 2,
         position: 'relative',
         paddingRight: 10,

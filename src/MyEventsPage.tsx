@@ -1,106 +1,87 @@
 // src/MyEventsPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
-import EventModal from './EventModal';
+import Navbar from './Navbar';
+import Sidebar from './Sidebar';
+import Content from './Content';
 
-const MyEventsPage = ({ items, onDeleteItem, currentUserAddress, isAdmin }) => {
+const MyEventsPage = ({ isAdmin }) => {
   const { address, isConnected } = useAccount();
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [items, setItems] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isConnected) {
+      axios.get('http://localhost:5000/events')
+        .then(response => {
+          const myItems = response.data.filter(item => item.owner === address);
+          setItems(myItems);
+          const uniqueCategories = [...new Set(myItems.map(item => item.category))];
+          setCategories(uniqueCategories);
+        })
+        .catch(error => console.error('Error fetching items:', error));
+    }
+  }, [address, isConnected]);
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategories(prevSelectedCategories =>
+      prevSelectedCategories.includes(category)
+        ? prevSelectedCategories.filter(c => c !== category)
+        : [...prevSelectedCategories, category]
+    );
+  };
+
+  const handleDeleteItem = (id) => {
+    axios.delete(`http://localhost:5000/events/${id}`)
+      .then(() => setItems(items.filter(item => item._id !== id)))
+      .catch(error => console.error('Error deleting item:', error));
+  };
+
+  const handleItemClick = (eventId) => {
+    navigate(`/event/${eventId}`);
+  };
 
   if (!isConnected) {
     return <div style={styles.message}>Please connect your wallet to view your events.</div>;
   }
 
-  const myItems = items.filter(item => item.owner === address);
-
-  if (myItems.length === 0) {
+  if (items.length === 0) {
     return <div style={styles.message}>You have no events.</div>;
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>My Events</h2>
-      <div style={styles.content}>
-        {myItems.map((item, index) => (
-          <div key={index} style={styles.itemBox} onClick={() => setSelectedEvent(item)}>
-            <img src={item.image} alt={item.name} style={styles.itemImage} />
-            <h3 style={styles.itemTitle}>{item.name}</h3>
-            <p style={styles.itemDescription}>{item.description}</p>
-            <p style={styles.itemOwner}>Owner: {item.owner}</p>
-          </div>
-        ))}
-      </div>
-      <EventModal
-        event={selectedEvent}
-        onClose={() => setSelectedEvent(null)}
-        onDelete={onDeleteItem}
-        onEdit={() => console.log('Edit functionality not yet implemented')}
-        currentUserAddress={currentUserAddress}
+    <div style={styles.container}>
+      <Sidebar
+        selectedCategories={selectedCategories}
+        onCategoryChange={handleCategoryChange}
+        categories={categories}
+      />
+      <Content
+        selectedCategories={selectedCategories}
+        items={items}
+        onDeleteItem={handleDeleteItem}
+        currentUserAddress={address}
         isAdmin={isAdmin}
+        onItemClick={handleItemClick}
       />
     </div>
   );
 };
 
 const styles = {
+  container: {
+    display: 'flex',
+    padding: '20px',
+  },
   message: {
     padding: '20px',
     textAlign: 'center',
     fontSize: '18px',
     color: '#555',
-  },
-  content: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '20px',
-    padding: '20px',
-  },
-  itemBox: {
-    width: '250px',
-    height: '350px',
-    padding: '20px',
-    backgroundColor: '#fff',
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-    borderRadius: '5px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    overflow: 'hidden',
-    textAlign: 'center',
-    cursor: 'pointer',
-  },
-  itemImage: {
-    width: '100%',
-    height: 'auto',
-    borderRadius: '5px',
-  },
-  itemTitle: {
-    textDecoration: 'underline',
-    margin: '10px 0',
-    height: '40px',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  itemDescription: {
-    fontSize: '14px',
-    color: '#555',
-    textAlign: 'justify',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    display: '-webkit-box',
-    WebkitLineClamp: 3,
-    WebkitBoxOrient: 'vertical',
-    height: '80px',
-  },
-  itemOwner: {
-    fontSize: '12px',
-    color: '#999',
-    wordBreak: 'break-word',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-    height: '20px',
   },
 };
 

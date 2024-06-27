@@ -1,3 +1,4 @@
+// src/AdminPage.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useAccount } from 'wagmi';
@@ -8,6 +9,7 @@ const AdminPage = ({ onAddItem, onWhitelistAdmin }) => {
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
   const [category, setCategory] = useState('');
+  const [owner, setOwner] = useState('');
   const [newAdminAddress, setNewAdminAddress] = useState('');
   const [confirmationMessage, setConfirmationMessage] = useState('');
 
@@ -36,20 +38,30 @@ const AdminPage = ({ onAddItem, onWhitelistAdmin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newItem = {
-      name,
-      description,
-      image,
-      category,
-      owner: address,
-    };
+
     try {
-      const response = await axios.post('http://localhost:5000/events', newItem);
-      onAddItem(response.data);
+      // Get the latest eventId
+      const response = await axios.get('http://localhost:5000/events/latestId');
+      console.log(response)
+      const latestEventId = response.data.latestEventId;
+      const newEventId = latestEventId + 1;
+
+      const newItem = {
+        name,
+        description,
+        image,
+        category,
+        owner,
+        eventId: newEventId,
+      };
+
+      const eventResponse = await axios.post('http://localhost:5000/events', newItem);
+      onAddItem(eventResponse.data);
       setName('');
       setDescription('');
       setImage('');
       setCategory('');
+      setOwner('');
       setConfirmationMessage('Event added successfully!');
       setTimeout(() => setConfirmationMessage(''), 3000);
     } catch (err) {
@@ -107,6 +119,14 @@ const AdminPage = ({ onAddItem, onWhitelistAdmin }) => {
           <option value="DeFi">DeFi</option>
           <option value="IRL Events">IRL Events</option>
         </select>
+        <input
+          type="text"
+          placeholder="Owner"
+          value={owner}
+          onChange={(e) => setOwner(e.target.value)}
+          required
+          style={styles.input}
+        />
         <button type="submit" style={styles.button}>Add Event</button>
       </form>
 

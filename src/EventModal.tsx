@@ -1,7 +1,10 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate } from 'react-router-dom';
 
 const EventModal = ({ event, onClose, onDelete, onEdit, currentUserAddress, isAdmin }) => {
+  const navigate = useNavigate();
+
   if (!event) return null;
 
   const isOwner = event.owner === currentUserAddress;
@@ -9,6 +12,10 @@ const EventModal = ({ event, onClose, onDelete, onEdit, currentUserAddress, isAd
   const handleDelete = () => {
     onDelete(event._id);
     onClose();
+  };
+
+  const handleDeployPoap = () => {
+    navigate(`/deploy`, { state: { eventId: event.eventId } });
   };
 
   return createPortal(
@@ -25,6 +32,7 @@ const EventModal = ({ event, onClose, onDelete, onEdit, currentUserAddress, isAd
           <div style={styles.actions}>
             <button onClick={onEdit} style={styles.editButton}>Edit</button>
             <button onClick={handleDelete} style={styles.deleteButton}>Delete</button>
+            <button onClick={handleDeployPoap} style={styles.deployButton}>Deploy Poap</button>
           </div>
         )}
       </div>
@@ -103,6 +111,14 @@ const styles = {
   deleteButton: {
     padding: '10px',
     backgroundColor: '#ff0000',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  },
+  deployButton: {
+    padding: '10px',
+    backgroundColor: '#28a745',
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
