@@ -1,35 +1,48 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { readContract } from '@wagmi/core';
-import { useChainId } from 'wagmi';
 import { abiPoap } from './contractDeployer/abiPoap';
 import { config } from './wagmi.ts';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 
-const explorers = {
-  1: 'https://etherscan.io/',
-  11155111: 'https://sepolia.etherscan.io/',
-  84532: 'https://sepolia.basescan.org/',
-};
+interface EventDetailsPageProps {
+  currentUserAddress: `0x${string}`;
+  isAdmin: boolean;
+  onDelete: (id: string) => void;
+}
 
-const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }) => {
-  const { eventId } = useParams();
-  const [event, setEvent] = useState(null);
-  const [status, setStatus] = useState('');
-  const [poapDetails, setPoapDetails] = useState([]);
-  const [selectedPoap, setSelectedPoap] = useState(null); 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [poapDropdownOpen, setPoapDropdownOpen] = useState(false);
-  const [mintLink, setMintLink] = useState(''); 
-  const [linkTypeDropdownOpen, setLinkTypeDropdownOpen] = useState(false);
-  const [isMintingEnded, setIsMintingEnded] = useState(false); // State for minting end status
+interface Event {
+  _id: string;
+  name: string;
+  image: string;
+  description: string;
+  category: string;
+  owner: string;
+  eventId: string;
+}
+
+interface Poap {
+  address: `0x${string}`;
+  name?: string;
+  maxSupply?: string;
+  totalSupply?: string;
+}
+
+const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }: EventDetailsPageProps) => {
+  const { eventId } = useParams<{ eventId: string }>();
+  const [event, setEvent] = useState<Event | null>(null);
+  const [status, setStatus] = useState<string>('');
+  const [poapDetails, setPoapDetails] = useState<Poap[]>([]);
+  const [selectedPoap, setSelectedPoap] = useState<Poap | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+  const [poapDropdownOpen, setPoapDropdownOpen] = useState<boolean>(false);
+  const [mintLink, setMintLink] = useState<string>('');
+  const [isMintingEnded, setIsMintingEnded] = useState<boolean>(false);
   const navigate = useNavigate();
-  const chainId = useChainId();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const togglePoapDropdown = () => setPoapDropdownOpen(!poapDropdownOpen);
-  const toggleLinkTypeDropdown = () => setLinkTypeDropdownOpen(!linkTypeDropdownOpen);
 
   useEffect(() => {
     axios.get(`http://localhost:5000/events/${eventId}`)
@@ -46,34 +59,30 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }) => {
 
       console.log('Fetched POAPs:', poaps);
 
-      const updatedPoaps = await Promise.all(poaps.map(async poap => {
+      const updatedPoaps = await Promise.all(poaps.map(async (poap: Poap) => {
         if (!poap.address) {
           console.error(`Missing address for POAP: ${JSON.stringify(poap)}`);
           return poap;
         }
 
         try {
-          console.log(`Fetching details for POAP contract: ${poap.address}`);
           const maxSupply = await readContract(config, {
             abi: abiPoap,
             address: poap.address,
             functionName: 'maxSupply',
-          });
-          console.log(`maxSupply for ${poap.address}: ${maxSupply}`);
+          }) as bigint;
 
           const poapContractName = await readContract(config, {
             abi: abiPoap,
             address: poap.address,
             functionName: 'name',
-          });
-          console.log(`Name for ${poap.address}: ${poapContractName}`);
+          }) as string;
 
           const totalSupply = await readContract(config, {
             abi: abiPoap,
             address: poap.address,
             functionName: 'totalSupply',
-          });
-          console.log(`totalSupply for ${poap.address}: ${totalSupply}`);
+          }) as bigint;
 
           return {
             ...poap,
@@ -93,19 +102,21 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }) => {
   };
 
   const handleDelete = () => {
-    onDelete(event._id);
-    navigate('/');
+    if (event) {
+      onDelete(event._id);
+      navigate('/');
+    }
   };
 
   const handleDeployPoap = () => {
     navigate(`/deploy-poap/${eventId}`);
   };
 
-  const handlePoapSelect = (poap) => {
+  const handlePoapSelect = (poap: Poap) => {
     setSelectedPoap(poap);
   };
 
-  const generateMintLink = async (type) => {
+  const generateMintLink = async (type: string) => {
     if (!selectedPoap) {
       alert('Please select a POAP first.');
       return;
@@ -140,7 +151,7 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }) => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h2 style={styles.title}>{event.name}</h2>
+        <h2 style={styles.title as React.CSSProperties}>{event.name}</h2>
         {(isOwner || isAdmin) && (
           <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
             <DropdownToggle caret style={styles.dropdownToggle}>
@@ -166,7 +177,7 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }) => {
       </div>
       <p style={styles.category}>Category: {event.category}</p>
       <p style={styles.owner}>Owner: {event.owner}</p>
-      {status && <p style={styles.status}>{status}</p>}
+      {status && <p style={styles.status as React.CSSProperties}>{status}</p>}
       {poapDetails.length > 0 && (
         <div style={styles.poapDetails}>
           <h3>POAP Details</h3>
@@ -189,7 +200,7 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }) => {
               {selectedPoap.maxSupply && selectedPoap.totalSupply ? (
                 <>
                   <p>Total POAPs Minted: {selectedPoap.totalSupply} / {selectedPoap.maxSupply}</p>
-                  {mintLink && <p style={styles.mintLink}>Mint Link: <a href={mintLink}>{mintLink}</a></p>}
+                  {mintLink && <p style={styles.mintLink as React.CSSProperties}>Mint Link: <a href={mintLink}>{mintLink}</a></p>}
                   <p>Mint Status: {selectedPoap.totalSupply === selectedPoap.maxSupply ? 'Fully Minted' : isMintingEnded ? 'Mint Ended' : 'Active'}</p>
                   {!isMintingEnded && (
                     <>

@@ -1,7 +1,13 @@
 // src/Sidebar.tsx
 import React from 'react';
 
-const Sidebar = ({ selectedCategories, onCategoryChange, categories }) => {
+interface SidebarProps {
+  selectedCategories: string[];
+  onCategoryChange: (category: string) => void;
+  categories: string[];
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ selectedCategories, onCategoryChange, categories }) => {
   return (
     <div style={styles.sidebar}>
       <h3>Categories</h3>

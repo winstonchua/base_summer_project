@@ -50,10 +50,4 @@ Goal.md
 /contracts
 /commands.md
 /test
-
-# SRC
-/src/BasicTransaction.tsx
-/src/ChooseNetwork.tsx
-/src/DeployERC721.tsx
-/src/EventModal.tsx
-/src/oldEventDetailsPage.tsx
+/my-rainbowkit-app

@@ -1,16 +1,16 @@
 // src/Navbar.tsx
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAccount, useDisconnect } from 'wagmi';
+import { useAccount } from 'wagmi';
 import { BlackCreateWalletButton } from './BlackCreateWalletButton';
 import logo from './pictures/plague.png';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
-const Navbar = ({ isAdmin }) => {
-  const { address, isConnected } = useAccount();
-  const { disconnect } = useDisconnect();
+interface NavbarProps {
+  isAdmin: boolean;
+}
 
-  const truncatedAddress = address ? `0x${address.slice(2, 6)}...${address.slice(-4)}` : '';
+const Navbar = ({ isAdmin }: NavbarProps) => {
+  const { isConnected } = useAccount();
 
   return (
     <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 20px', height: '60px', backgroundColor: '#fff', color: '#000' }}>

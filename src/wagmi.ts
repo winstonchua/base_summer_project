@@ -1,6 +1,5 @@
 import { http, createConfig } from 'wagmi';
 import { mainnet, sepolia , baseSepolia} from 'wagmi/chains';
-import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors';
 import '@rainbow-me/rainbowkit/styles.css';
 import { connectorsForWallets  } from '@rainbow-me/rainbowkit';
 import {

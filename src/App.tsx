@@ -1,14 +1,12 @@
 // src/App.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './HomePage';
 import EventDetailsPage from './EventDetailsPage';
 import AdminPage from './AdminPage';
-import DeployERC721 from './DeployERC721';
 import MyEventsPage from './MyEventsPage';
 import Layout from './Layout';
 import axios from 'axios';
-import BasicTransaction from './BasicTransaction';
 import { useAccount } from 'wagmi';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DeployPoapPage from './DeployPoapPage';
@@ -17,8 +15,8 @@ import ProfilePage from './ProfilePage';
 
 const App = () => {
   const { address } = useAccount();
-  const [items, setItems] = useState([]);
-  const [adminAddresses, setAdminAddresses] = useState(['0x6C5CBA5B117ab22df5D8DCD35eB7a57982F653D8']);
+  const [items, setItems] = useState<any[]>([]);
+  const [adminAddresses, setAdminAddresses] = useState<string[]>(['0x6C5CBA5B117ab22df5D8DCD35eB7a57982F653D8']);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -37,17 +35,17 @@ const App = () => {
     }
   }, [address, adminAddresses]);
 
-  const handleWhitelistAdmin = (newAdminAddress) => {
+  const handleWhitelistAdmin = (newAdminAddress: string) => {
     if (!adminAddresses.includes(newAdminAddress)) {
       setAdminAddresses([...adminAddresses, newAdminAddress]);
     }
   };
 
-  const handleAddItem = (newItem) => {
+  const handleAddItem = (newItem: any) => {
     setItems([...items, newItem]);
   };
 
-  const handleDeleteItem = (id) => {
+  const handleDeleteItem = (id: string) => {
     axios.delete(`http://localhost:5000/events/${id}`)
       .then(() => setItems(items.filter(item => item._id !== id)))
       .catch(error => console.error('Error deleting item:', error));
@@ -61,10 +59,7 @@ const App = () => {
             path="/"
             element={
               <HomePage
-                isAdmin={isAdmin}
-                onWhitelistAdmin={handleWhitelistAdmin}
                 items={items}
-                onAddItem={handleAddItem}
                 onDeleteItem={handleDeleteItem}
                 currentUserAddress={address}
               />
@@ -74,7 +69,7 @@ const App = () => {
             path="/event/:eventId"
             element={
               <EventDetailsPage
-                currentUserAddress={address}
+                currentUserAddress={address || '0x'}
                 isAdmin={isAdmin}
                 onDelete={handleDeleteItem}
               />
@@ -82,7 +77,6 @@ const App = () => {
           />
           <Route path="/deploy-poap/:eventId" element={<DeployPoapPage />} />
           <Route path="/mint-poap/:poapContractAddress/:eventId/:poapId/:nonce" element={<MintPoapPage />} />
-          <Route path="/deploy" element={<DeployERC721 />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/yourevents" element={<MyEventsPage />} />
           <Route

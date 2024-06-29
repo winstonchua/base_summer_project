@@ -1,5 +1,5 @@
 // src/MintPoapPage.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAccount, useSignMessage } from 'wagmi';
 import axios from 'axios';
@@ -33,20 +33,20 @@ const MintPoapPage = () => {
       });
 
       setStatus('POAP minted successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error minting POAP:', error);
       setStatus(`Error minting POAP. ${error.response?.data?.error || error.message}`);
     }
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container as React.CSSProperties}>
       <h2>Mint POAP</h2>
       <p>Event ID: {eventId}</p>
       <p>POAP Contract Address: {poapContractAddress}</p>
       <p>POAP ID: {poapId}</p>
-      <button onClick={mintPoap} style={styles.button}>Mint POAP</button>
-      {status && <p style={styles.status}>{status}</p>}
+      <button onClick={mintPoap} style={styles.button as React.CSSProperties}>Mint POAP</button>
+      {status && <p style={styles.status as React.CSSProperties}>{status}</p>}
     </div>
   );
 };
@@ -59,7 +59,7 @@ const styles = {
     backgroundColor: '#f8f8f8',
     boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
     borderRadius: '10px',
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
   button: {
     backgroundColor: '#000',

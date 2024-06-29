@@ -1,18 +1,24 @@
-// src/Content.tsx
-import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Content = ({ selectedCategories, items }) => {
+interface ContentProps {
+  selectedCategories: string[];
+  items: any[];
+  onDeleteItem: (id: string) => void;
+  currentUserAddress: `0x${string}` | undefined;
+  onItemClick: (eventId: string) => void;
+}
+
+const Content = ({ selectedCategories, items}: ContentProps) => {
   const filteredItems = selectedCategories.length === 0 ? items : items.filter(item => selectedCategories.includes(item.category));
 
   return (
-    <div style={styles.content}>
+    <div style={styles.content as React.CSSProperties}>
       {filteredItems.map((item, index) => (
         <Link to={`/event/${item.eventId}`} key={index} style={styles.itemBoxLink}>
-          <div style={styles.itemBox}>
-            <img src={item.image} alt={item.name} style={styles.itemImage} />
-            <h3 style={styles.itemTitle}>{item.name}</h3>
-            <p style={styles.itemDescription}>{item.description}</p>
+          <div style={styles.itemBox as React.CSSProperties}>
+            <img src={item.image} alt={item.name} style={styles.itemImage as React.CSSProperties} />
+            <h3 style={styles.itemTitle as React.CSSProperties}>{item.name}</h3>
+            <p style={styles.itemDescription as React.CSSProperties}>{item.description}</p>
             <p style={styles.itemOwner}>Owner: {item.owner}</p>
           </div>
         </Link>
@@ -24,7 +30,7 @@ const Content = ({ selectedCategories, items }) => {
 const styles = {
   content: {
     display: 'flex',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap' as 'wrap',
     gap: '20px',
     padding: '20px',
   },
@@ -39,15 +45,15 @@ const styles = {
     backgroundColor: '#fff',
     boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
     borderRadius: '5px',
-    textAlign: 'center',
+    textAlign: 'center' as 'center', 
     display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+    flexDirection: 'column' as 'column',
+    justifyContent: 'space-between' as 'space-between',
   },
   itemImage: {
     width: '100%',
     height: '150px',
-    objectFit: 'cover',
+    objectFit: 'cover' as 'cover',
     borderRadius: '5px',
   },
   itemTitle: {
@@ -56,7 +62,7 @@ const styles = {
     margin: '10px 0',
     overflow: 'hidden',
     display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
+    WebkitBoxOrient: 'vertical' as 'vertical',
     WebkitLineClamp: 1,
   },
   itemDescription: {
@@ -65,8 +71,8 @@ const styles = {
     flexGrow: 1,
     overflow: 'hidden',
     display: '-webkit-box',
-    WebkitBoxOrient: 'vertical',
-    WebkitLineClamp: 3, // Change this value to set the number of lines
+    WebkitBoxOrient: 'vertical' as 'vertical',
+    WebkitLineClamp: 3,
   },
   itemOwner: {
     fontSize: '12px',

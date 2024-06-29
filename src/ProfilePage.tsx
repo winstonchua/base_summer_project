@@ -3,9 +3,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAccount } from 'wagmi';
 
+interface Poap {
+  tokenURI: string;
+  eventName: string;
+  poapId: string;
+}
+
 const ProfilePage = () => {
   const { address } = useAccount();
-  const [poaps, setPoaps] = useState([]);
+  const [poaps, setPoaps] = useState<Poap[]>([]);
 
   useEffect(() => {
     if (!address) return;
@@ -14,7 +20,6 @@ const ProfilePage = () => {
       try {
         const response = await axios.get(`http://localhost:5000/poap/user/${address}`);
         setPoaps(response.data);
-        console.log(`huehue  ${JSON.stringify(response.data)}`)
       } catch (error) {
         console.error('Error fetching POAPs:', error);
       }
@@ -24,13 +29,13 @@ const ProfilePage = () => {
   }, [address]);
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container as React.CSSProperties}>
       <h2>Your POAPs</h2>
       {poaps.length > 0 ? (
-        <div style={styles.poapGrid}>
+        <div style={styles.poapGrid as React.CSSProperties}>
           {poaps.map((poap, index) => (
-            <div key={index} style={styles.poapItem}>
-              <img src={poap.tokenURI} alt={`POAP ${index + 1}`} style={styles.poapImage} />
+            <div key={index} style={styles.poapItem as React.CSSProperties}>
+              <img src={poap.tokenURI} alt={`POAP ${index + 1}`} style={styles.poapImage as React.CSSProperties} />
               <p>{poap.eventName}</p>
               <p>Contract Address: {poap.tokenURI}</p>
               <p>POAP ID: {poap.poapId}</p>

@@ -1,5 +1,5 @@
 // src/DeployPoapPage.tsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { writeContract, waitForTransactionReceipt } from '@wagmi/core';
@@ -15,19 +15,18 @@ const explorers = {
   };
 
 const DeployPoapPage = () => {
-  const { eventId } = useParams();
-  const [status, setStatus] = useState('');
-  const [poapName, setPoapName] = useState('');
-  const [poapSymbol, setPoapSymbol] = useState('');
-  const [maxSupply, setMaxSupply] = useState('');
-  const [image, setImage] = useState(null);
-  const [tokenURI, setTokenURI] = useState('');
-  const [contractCode, setContractCode] = useState('');
-  const [bytecode, setBytecode] = useState('');
-  const [hash, setHash] = useState('');
+  const { eventId } = useParams<{ eventId: string }>();
+  const [status, setStatus] = useState<string>('');
+  const [poapName, setPoapName] = useState<string>('');
+  const [poapSymbol, setPoapSymbol] = useState<string>('');
+  const [maxSupply, setMaxSupply] = useState<string>('');
+  const [tokenURI, setTokenURI] = useState<string>('');
+  const [contractCode, setContractCode] = useState<string>('');
+  const [bytecode, setBytecode] = useState<string>('');
+  const [hash, setHash] = useState<string>('');
   const chainId = useChainId();
 
-  const handleCompile = async (e) => {
+  const handleCompile = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!tokenURI) {
@@ -71,7 +70,7 @@ const DeployPoapPage = () => {
     }
   };
 
-  const handleDeploy = async (e) => {
+  const handleDeploy = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
@@ -97,8 +96,9 @@ const DeployPoapPage = () => {
 
         console.log(`Contract Address: ${contractAddress}`)
         setStatus('Contract deployed successfully!');
-        updateContractAddress(eventId, contractAddress);
-      } catch (error) {
+        if (eventId) {
+          updateContractAddress(eventId, contractAddress);
+        }      } catch (error) {
         console.error('Error fetching transaction receipt:', error);
       }
     } catch (error) {
@@ -107,7 +107,7 @@ const DeployPoapPage = () => {
     }
   };
 
-  const updateContractAddress = async (eventId, contractAddress) => {
+  const updateContractAddress = async (eventId: string, contractAddress: string) => {
     try {
       const response = await axios.put(`http://localhost:5000/events/${eventId}/contract`, { contractAddress });
       console.log('Event updated with contract address:', response.data);
@@ -116,12 +116,11 @@ const DeployPoapPage = () => {
     }
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    setImage(file);
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
 
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', file as File);
 
     try {
       const response = await axios.post('http://localhost:5000/upload/upload', formData, {
@@ -138,11 +137,11 @@ const DeployPoapPage = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container as React.CSSProperties}>
       <h2>Deploy POAP</h2>
-      <form onSubmit={handleCompile} style={styles.form}>
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>POAP Name:</label>
+      <form onSubmit={handleCompile} style={styles.form as React.CSSProperties}>
+        <div style={styles.inputGroup as React.CSSProperties}>
+          <label>POAP Name:</label>
           <input
             type="text"
             value={poapName}
@@ -151,8 +150,8 @@ const DeployPoapPage = () => {
             style={styles.input}
           />
         </div>
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>POAP Symbol:</label>
+        <div style={styles.inputGroup as React.CSSProperties}>
+          <label>POAP Symbol:</label>
           <input
             type="text"
             value={poapSymbol}
@@ -161,8 +160,8 @@ const DeployPoapPage = () => {
             style={styles.input}
           />
         </div>
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>Max Supply:</label>
+        <div style={styles.inputGroup as React.CSSProperties}>
+          <label>Max Supply:</label>
           <input
             type="number"
             value={maxSupply}
@@ -171,8 +170,8 @@ const DeployPoapPage = () => {
             style={styles.input}
           />
         </div>
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>Upload Image:</label>
+        <div style={styles.inputGroup as React.CSSProperties}>
+          <label>Upload Image:</label>
           <input type="file" onChange={handleImageUpload} style={styles.input} />
         </div>
         <button type="submit" style={{ ...styles.button, ...styles.actionButton }}>
@@ -180,16 +179,16 @@ const DeployPoapPage = () => {
         </button>
       </form>
       {contractCode && (
-        <div style={styles.result}>
+        <div style={styles.result as React.CSSProperties}>
           <h3>Contract Code:</h3>
-          <pre style={styles.pre}>{contractCode}</pre>
+          <pre style={styles.pre as React.CSSProperties}>{contractCode}</pre>
         </div>
       )}
       {bytecode && (
         <>
-          <div style={styles.result}>
+          <div style={styles.result as React.CSSProperties}>
             <h3>Bytecode:</h3>
-            <pre style={styles.pre}>{bytecode}</pre>
+            <pre style={styles.pre as React.CSSProperties}>{bytecode}</pre>
           </div>
           <button onClick={handleDeploy} style={{ ...styles.button, ...styles.actionButton, marginTop: '20px' }}>
             Deploy
@@ -197,11 +196,11 @@ const DeployPoapPage = () => {
         </>
       )}
       {hash && (
-        <div style={styles.result}>
+        <div style={styles.result as React.CSSProperties}>
           Transaction sent! Hash: <a href={`${explorers[chainId]}tx/${hash}`} target="_blank" rel="noopener noreferrer">{hash}</a>
         </div>
       )}
-      {status && <p style={styles.status}>{status}</p>}
+      {status && <p style={styles.status as React.CSSProperties}>{status}</p>}
     </div>
   );
 };

@@ -1,48 +1,54 @@
 // src/AdminPage.tsx
-import React, { useState } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
-import { useAccount } from 'wagmi';
 
-const AdminPage = ({ onAddItem, onWhitelistAdmin }) => {
-  const { address } = useAccount();
+interface AdminPageProps {
+  onAddItem: (newItem: any) => void;
+  onWhitelistAdmin: (newAdminAddress: string) => void;
+}
+
+const AdminPage: React.FC<AdminPageProps> = ({ onAddItem, onWhitelistAdmin }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState<string>('');
   const [category, setCategory] = useState('');
   const [owner, setOwner] = useState('');
   const [newAdminAddress, setNewAdminAddress] = useState('');
   const [confirmationMessage, setConfirmationMessage] = useState('');
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const img = new Image();
-      img.src = reader.result;
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const width = 250; // Fixed width
-        const height = 135; // Fixed height
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const img = new Image();
+        img.src = reader.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const width = 250; // Fixed width
+          const height = 135; // Fixed height
 
-        canvas.width = width;
-        canvas.height = height;
-        ctx.drawImage(img, 0, 0, width, height);
+          if (ctx) {
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
 
-        const resizedImage = canvas.toDataURL('image/jpeg');
-        setImage(resizedImage);
+            const resizedImage = canvas.toDataURL('image/jpeg');
+            setImage(resizedImage);
+          }
+        };
       };
-    };
-    reader.readAsDataURL(file);
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     try {
       // Get the latest eventId
       const response = await axios.get('http://localhost:5000/events/latestId');
-      console.log(response)
       const latestEventId = response.data.latestEventId;
       const newEventId = latestEventId + 1;
 
@@ -71,7 +77,7 @@ const AdminPage = ({ onAddItem, onWhitelistAdmin }) => {
     }
   };
 
-  const handleWhitelistSubmit = (e) => {
+  const handleWhitelistSubmit = (e: FormEvent) => {
     e.preventDefault();
     onWhitelistAdmin(newAdminAddress);
     setNewAdminAddress('');
@@ -82,7 +88,7 @@ const AdminPage = ({ onAddItem, onWhitelistAdmin }) => {
   return (
     <div style={styles.container}>
       <h2>Admin Page</h2>
-      <form onSubmit={handleSubmit} style={styles.form}>
+      <form onSubmit={handleSubmit} style={styles.form as React.CSSProperties}>
         <input
           type="text"
           placeholder="Name"
@@ -130,7 +136,7 @@ const AdminPage = ({ onAddItem, onWhitelistAdmin }) => {
         <button type="submit" style={styles.button}>Add Event</button>
       </form>
 
-      <form onSubmit={handleWhitelistSubmit} style={styles.form}>
+      <form onSubmit={handleWhitelistSubmit} style={styles.form as React.CSSProperties}>
         <input
           type="text"
           placeholder="New Admin Wallet Address"

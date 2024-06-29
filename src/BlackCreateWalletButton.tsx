@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useConnect } from 'wagmi';
 import { CoinbaseWalletLogo } from './CoinbaseWalletLogo';
 
 const GRADIENT_BORDER_WIDTH = 2;
 
-const buttonStyles = {
+const buttonStyles: React.CSSProperties = {
   background: 'transparent',
   border: '1px solid transparent',
   boxSizing: 'border-box',
@@ -13,13 +13,19 @@ const buttonStyles = {
   display: 'inline-block',
 };
 
-const contentWrapperStyle = {
+const contentWrapperStyle: React.CSSProperties = {
   position: 'relative',
 };
 
-function Gradient({ children, style, isAnimationDisabled = false }) {
+interface GradientProps {
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+  isAnimationDisabled?: boolean;
+}
+
+function Gradient({ children, style, isAnimationDisabled = false }: GradientProps) {
   const [isAnimating, setIsAnimating] = useState(false);
-  const gradientStyle = useMemo(() => {
+  const gradientStyle: React.CSSProperties = useMemo(() => {
     const rotate = isAnimating ? '720deg' : '0deg';
     return {
       transform: `rotate(${rotate})`,
@@ -74,7 +80,7 @@ export function BlackCreateWalletButton({ height = 66, width = 200 }) {
         boxSizing: 'border-box',
         overflow: 'hidden',
         position: 'relative',
-      },
+      } as React.CSSProperties,
       gradient: {
         background:
           'conic-gradient(from 180deg, #45E1E5 0deg, #0052FF 86.4deg, #B82EA4 165.6deg, #FF9533 255.6deg, #7FD057 320.4deg, #45E1E5 360deg)',
@@ -83,7 +89,7 @@ export function BlackCreateWalletButton({ height = 66, width = 200 }) {
         left: -GRADIENT_BORDER_WIDTH,
         width: gradientDiameter,
         height: gradientDiameter,
-      },
+      } as React.CSSProperties,
       buttonBody: {
         display: 'flex',
         justifyContent: 'center',
@@ -100,7 +106,7 @@ export function BlackCreateWalletButton({ height = 66, width = 200 }) {
         position: 'relative',
         paddingRight: 10,
         overflow: 'hidden', // Ensure content stays within the button
-      },
+      } as React.CSSProperties,
     }),
     [buttonHeight, buttonWidth, gradientDiameter]
   );
@@ -119,7 +125,7 @@ export function BlackCreateWalletButton({ height = 66, width = 200 }) {
       <div style={styles.gradientContainer}>
         <Gradient style={styles.gradient}>
           <div style={styles.buttonBody}>
-            <CoinbaseWalletLogo containerStyles={{ paddingRight: 10 }} />
+            <CoinbaseWalletLogo containerStyles={{ paddingTop: 10 }} />
             <span>Create Wallet</span>
           </div>
         </Gradient>

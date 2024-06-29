@@ -1,8 +1,12 @@
 // src/Layout.tsx
-import React from 'react';
 import Navbar from './Navbar';
 
-const Layout = ({ children, isAdmin }) => {
+interface LayoutProps {
+  children: React.ReactNode;
+  isAdmin: boolean;
+}
+
+const Layout = ({ children, isAdmin }: LayoutProps) => {
   return (
     <div>
       <Navbar isAdmin={isAdmin} />

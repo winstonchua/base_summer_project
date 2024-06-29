@@ -1,8 +1,26 @@
-import React from 'react';
+// src/EventModal.tsx
+
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 
-const EventModal = ({ event, onClose, onDelete, onEdit, currentUserAddress, isAdmin }) => {
+interface EventModalProps {
+  event: {
+    _id: string;
+    name: string;
+    image: string;
+    description: string;
+    category: string;
+    owner: string;
+    eventId: string;
+  };
+  onClose: () => void;
+  onDelete: (id: string) => void;
+  onEdit: () => void;
+  currentUserAddress: string;
+  isAdmin: boolean;
+}
+
+const EventModal = ({ event, onClose, onDelete, onEdit, currentUserAddress, isAdmin }: EventModalProps) => {
   const navigate = useNavigate();
 
   if (!event) return null;
@@ -19,9 +37,9 @@ const EventModal = ({ event, onClose, onDelete, onEdit, currentUserAddress, isAd
   };
 
   return createPortal(
-    <div style={styles.overlay}>
-      <div style={styles.modal}>
-        <button onClick={onClose} style={styles.closeButton}>X</button>
+    <div style={styles.overlay as React.CSSProperties}>
+      <div style={styles.modal as React.CSSProperties}>
+        <button onClick={onClose} style={styles.closeButton as React.CSSProperties}>X</button>
         <h2 style={styles.title}>{event.name}</h2>
         <img src={event.image} alt={event.name} style={styles.image} />
         <p style={styles.label}>Description:</p>
@@ -37,7 +55,7 @@ const EventModal = ({ event, onClose, onDelete, onEdit, currentUserAddress, isAd
         )}
       </div>
     </div>,
-    document.getElementById('modal-root')
+    document.getElementById('modal-root') as Element
   );
 };
 

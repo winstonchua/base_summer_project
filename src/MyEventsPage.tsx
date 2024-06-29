@@ -1,33 +1,32 @@
 // src/MyEventsPage.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
-import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import Content from './Content';
 
-const MyEventsPage = ({ isAdmin }) => {
+const MyEventsPage = () => {
   const { address, isConnected } = useAccount();
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [items, setItems] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [items, setItems] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isConnected) {
       axios.get('http://localhost:5000/events')
         .then(response => {
-          const myItems = response.data.filter(item => item.owner === address);
+          const myItems = response.data.filter((item: any) => item.owner === address);
           setItems(myItems);
-          const uniqueCategories = [...new Set(myItems.map(item => item.category))];
+          const uniqueCategories = [...new Set<string>(myItems.map((item: any) => item.category))];
           setCategories(uniqueCategories);
         })
         .catch(error => console.error('Error fetching items:', error));
     }
   }, [address, isConnected]);
 
-  const handleCategoryChange = (category) => {
+  const handleCategoryChange = (category: string) => {
     setSelectedCategories(prevSelectedCategories =>
       prevSelectedCategories.includes(category)
         ? prevSelectedCategories.filter(c => c !== category)
@@ -35,26 +34,26 @@ const MyEventsPage = ({ isAdmin }) => {
     );
   };
 
-  const handleDeleteItem = (id) => {
+  const handleDeleteItem = (id: string) => {
     axios.delete(`http://localhost:5000/events/${id}`)
       .then(() => setItems(items.filter(item => item._id !== id)))
       .catch(error => console.error('Error deleting item:', error));
   };
 
-  const handleItemClick = (eventId) => {
+  const handleItemClick = (eventId: string) => {
     navigate(`/event/${eventId}`);
   };
 
   if (!isConnected) {
-    return <div style={styles.message}>Please connect your wallet to view your events.</div>;
+    return <div style={styles.message as React.CSSProperties}>Please connect your wallet to view your events.</div>;
   }
 
   if (items.length === 0) {
-    return <div style={styles.message}>You have no events.</div>;
+    return <div style={styles.message as React.CSSProperties}>You have no events.</div>;
   }
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container as React.CSSProperties}>
       <Sidebar
         selectedCategories={selectedCategories}
         onCategoryChange={handleCategoryChange}
@@ -65,7 +64,6 @@ const MyEventsPage = ({ isAdmin }) => {
         items={items}
         onDeleteItem={handleDeleteItem}
         currentUserAddress={address}
-        isAdmin={isAdmin}
         onItemClick={handleItemClick}
       />
     </div>

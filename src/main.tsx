@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Buffer } from 'buffer';
 import { WagmiProvider } from 'wagmi';
 import '@rainbow-me/rainbowkit/styles.css';
-import { ConnectButton , RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 
 import App from './App';
 import { config } from './wagmi';
