@@ -15,12 +15,11 @@ interface EventModalProps {
   };
   onClose: () => void;
   onDelete: (id: string) => void;
-  onEdit: () => void;
   currentUserAddress: string;
   isAdmin: boolean;
 }
 
-const EventModal = ({ event, onClose, onDelete, onEdit, currentUserAddress, isAdmin }: EventModalProps) => {
+const EventModal = ({ event, onClose, onDelete, currentUserAddress, isAdmin }: EventModalProps) => {
   const navigate = useNavigate();
 
   if (!event) return null;
@@ -48,7 +47,6 @@ const EventModal = ({ event, onClose, onDelete, onEdit, currentUserAddress, isAd
         <p style={styles.details}>Owner: {event.owner}</p>
         {(isOwner || isAdmin) && (
           <div style={styles.actions}>
-            <button onClick={onEdit} style={styles.editButton}>Edit</button>
             <button onClick={handleDelete} style={styles.deleteButton}>Delete</button>
             <button onClick={handleDeployPoap} style={styles.deployButton}>Deploy Poap</button>
           </div>
@@ -117,14 +115,6 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     marginTop: '20px',
-  },
-  editButton: {
-    padding: '10px',
-    backgroundColor: '#007BFF',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '5px',
-    cursor: 'pointer',
   },
   deleteButton: {
     padding: '10px',

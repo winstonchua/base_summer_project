@@ -12,13 +12,14 @@ interface Poap {
 const ProfilePage = () => {
   const { address } = useAccount();
   const [poaps, setPoaps] = useState<Poap[]>([]);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (!address) return;
 
     const fetchPoaps = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/poap/user/${address}`);
+        const response = await axios.get(`${apiUrl}/poap/user/${address}`);
         setPoaps(response.data);
       } catch (error) {
         console.error('Error fetching POAPs:', error);
@@ -37,7 +38,6 @@ const ProfilePage = () => {
             <div key={index} style={styles.poapItem as React.CSSProperties}>
               <img src={poap.tokenURI} alt={`POAP ${index + 1}`} style={styles.poapImage as React.CSSProperties} />
               <p>{poap.eventName}</p>
-              <p>Contract Address: {poap.tokenURI}</p>
               <p>POAP ID: {poap.poapId}</p>
             </div>
           ))}

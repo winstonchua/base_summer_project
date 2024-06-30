@@ -15,9 +15,11 @@ const HomePage: React.FC<HomePageProps> = ({ items, onDeleteItem, currentUserAdd
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    axios.get('http://localhost:5000/events')
+
+    axios.get(`${apiUrl}/events`)
       .then(response => {
         const uniqueCategories = [...new Set<string>(response.data.map((item: any) => item.category))];
         setCategories(uniqueCategories);

@@ -1,7 +1,8 @@
 // src/MintPoapPage.tsx
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAccount, useSignMessage } from 'wagmi';
+import { SiweMessage } from 'siwe';
 import axios from 'axios';
 
 const MintPoapPage = () => {
@@ -9,6 +10,18 @@ const MintPoapPage = () => {
   const { address } = useAccount();
   const [status, setStatus] = useState('');
   const { signMessageAsync } = useSignMessage();
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  const siweMessage = useMemo(() => {
+    return new SiweMessage({
+      domain: document.location.host,
+      address,
+      uri: document.location.origin,
+      version: '1',
+      statement: 'Minting POAP',
+      nonce,
+    });
+  }, [address, nonce]);
 
   const mintPoap = async () => {
     try {
@@ -20,10 +33,10 @@ const MintPoapPage = () => {
       setStatus('Minting POAP...');
 
       const signature = await signMessageAsync({
-        message: `Minting POAP with nonce: ${nonce}`,
+        message: siweMessage.prepareMessage(),
       });
 
-      await axios.post('http://localhost:5000/poap/mint-poap', {
+      await axios.post(`${apiUrl}/poap/mint-poap`, {
         eventId,
         poapContractAddress,
         poapId,

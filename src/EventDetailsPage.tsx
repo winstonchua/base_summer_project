@@ -39,13 +39,14 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }: EventDetail
   const [poapDropdownOpen, setPoapDropdownOpen] = useState<boolean>(false);
   const [mintLink, setMintLink] = useState<string>('');
   const [isMintingEnded, setIsMintingEnded] = useState<boolean>(false);
+  const apiUrl = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const togglePoapDropdown = () => setPoapDropdownOpen(!poapDropdownOpen);
 
   useEffect(() => {
-    axios.get(`http://localhost:5000/events/${eventId}`)
+    axios.get(`${apiUrl}/events/${eventId}`)
       .then(response => {
         setEvent(response.data);
       })
@@ -54,7 +55,7 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }: EventDetail
 
   const viewPoapDetails = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/events/${eventId}/poaps`);
+      const response = await axios.get(`${apiUrl}/events/${eventId}/poaps`);
       const poaps = response.data;
 
       console.log('Fetched POAPs:', poaps);
@@ -101,10 +102,16 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }: EventDetail
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (event) {
-      onDelete(event._id);
-      navigate('/');
+      try {
+        await axios.delete(`${apiUrl}/events/${event._id}`);
+        onDelete(event._id);
+        navigate('/');
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        setStatus('Failed to delete event.');
+      }
     }
   };
 
@@ -123,7 +130,7 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }: EventDetail
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/poap/generate-mint-link', {
+      const response = await axios.post(`${apiUrl}/poap/generate-mint-link`, {
         poapContractAddress: selectedPoap.address,
         eventId: eventId,
         poapId: poapDetails.indexOf(selectedPoap) + 1,
@@ -160,7 +167,6 @@ const EventDetailsPage = ({ currentUserAddress, isAdmin, onDelete }: EventDetail
               <div className="menu-bar menu-bar-bottom"></div>
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={() => setStatus('Editing...')}>Edit</DropdownItem>
               <DropdownItem onClick={handleDelete}>Delete</DropdownItem>
               <DropdownItem onClick={handleDeployPoap}>Deploy POAP</DropdownItem>
               <DropdownItem onClick={viewPoapDetails}>View POAP</DropdownItem>

@@ -16,16 +16,23 @@ import ProfilePage from './ProfilePage';
 const App = () => {
   const { address } = useAccount();
   const [items, setItems] = useState<any[]>([]);
-  const [adminAddresses, setAdminAddresses] = useState<string[]>(['0x6C5CBA5B117ab22df5D8DCD35eB7a57982F653D8']);
+  const [adminAddresses, setAdminAddresses] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    axios.get('http://localhost:5000/events')
+    axios.get(`${apiUrl}/events`)
       .then(response => {
         setItems(response.data);
       })
       .catch(error => console.error('Error fetching items:', error));
-  }, []);
+
+      axios.get(`${apiUrl}/admins`)
+      .then(response => {
+        setAdminAddresses(response.data.map((admin: { address: string }) => admin.address));
+      })
+      .catch(error => console.error('Error fetching admins:', error));
+  }, [apiUrl]);
 
   useEffect(() => {
     if (address && adminAddresses.includes(address)) {

@@ -23,6 +23,7 @@
     "react-image-crop": "^11.0.5",
     "react-router-dom": "^6.23.1",
     "reactstrap": "^9.2.2",
+    "siwe": "^2.3.2",
     "viem": "latest",
     "wagmi": "^2.9.8"
   },

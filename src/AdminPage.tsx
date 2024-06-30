@@ -15,6 +15,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onAddItem, onWhitelistAdmin }) =>
   const [owner, setOwner] = useState('');
   const [newAdminAddress, setNewAdminAddress] = useState('');
   const [confirmationMessage, setConfirmationMessage] = useState('');
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -48,7 +49,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onAddItem, onWhitelistAdmin }) =>
 
     try {
       // Get the latest eventId
-      const response = await axios.get('http://localhost:5000/events/latestId');
+      const response = await axios.get(`${apiUrl}/events/latestId`);
       const latestEventId = response.data.latestEventId;
       const newEventId = latestEventId + 1;
 
@@ -61,7 +62,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onAddItem, onWhitelistAdmin }) =>
         eventId: newEventId,
       };
 
-      const eventResponse = await axios.post('http://localhost:5000/events', newItem);
+      const eventResponse = await axios.post(`${apiUrl}/events`, newItem);
       onAddItem(eventResponse.data);
       setName('');
       setDescription('');
@@ -77,12 +78,19 @@ const AdminPage: React.FC<AdminPageProps> = ({ onAddItem, onWhitelistAdmin }) =>
     }
   };
 
-  const handleWhitelistSubmit = (e: FormEvent) => {
+  const handleWhitelistSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    onWhitelistAdmin(newAdminAddress);
-    setNewAdminAddress('');
-    setConfirmationMessage('Admin added successfully!');
-    setTimeout(() => setConfirmationMessage(''), 3000);
+    try {
+      await axios.post(`${apiUrl}/admins`, { address: newAdminAddress });
+      onWhitelistAdmin(newAdminAddress);
+      setNewAdminAddress('');
+      setConfirmationMessage('Admin added successfully!');
+      setTimeout(() => setConfirmationMessage(''), 3000);
+    } catch (error) {
+      console.error('Error adding admin:', error);
+      setConfirmationMessage('Failed to add admin.');
+      setTimeout(() => setConfirmationMessage(''), 3000);
+    }
   };
 
   return (

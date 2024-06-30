@@ -12,10 +12,11 @@ const MyEventsPage = () => {
   const [items, setItems] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const navigate = useNavigate();
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (isConnected) {
-      axios.get('http://localhost:5000/events')
+      axios.get(`${apiUrl}/events`)
         .then(response => {
           const myItems = response.data.filter((item: any) => item.owner === address);
           setItems(myItems);

@@ -25,6 +25,7 @@ const DeployPoapPage = () => {
   const [bytecode, setBytecode] = useState<string>('');
   const [hash, setHash] = useState<string>('');
   const chainId = useChainId();
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleCompile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +62,7 @@ const DeployPoapPage = () => {
 
     // Call the backend to compile the contract and get the bytecode
     try {
-      const response = await axios.post('http://localhost:5000/compile/compile', { contractTemplate, poapName });
+      const response = await axios.post(`${apiUrl}/compile/compile`, { contractTemplate, poapName });
       setBytecode(response.data.bytecode);
       setStatus('Contract compiled successfully');
     } catch (error) {
@@ -109,7 +110,7 @@ const DeployPoapPage = () => {
 
   const updateContractAddress = async (eventId: string, contractAddress: string) => {
     try {
-      const response = await axios.put(`http://localhost:5000/events/${eventId}/contract`, { contractAddress });
+      const response = await axios.put(`${apiUrl}/events/${eventId}/contract`, { contractAddress });
       console.log('Event updated with contract address:', response.data);
     } catch (error) {
       console.error('Error updating event with contract address:', error);
@@ -123,7 +124,7 @@ const DeployPoapPage = () => {
     formData.append('image', file as File);
 
     try {
-      const response = await axios.post('http://localhost:5000/upload/upload', formData, {
+      const response = await axios.post(`${apiUrl}/upload/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
