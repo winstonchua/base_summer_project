@@ -125,7 +125,9 @@ export function BlackCreateWalletButton({ height = 66, width = 200 }) {
       <div style={styles.gradientContainer}>
         <Gradient style={styles.gradient}>
           <div style={styles.buttonBody}>
-            <CoinbaseWalletLogo containerStyles={{ paddingRight: 5 }} />
+            <div style={{ paddingRight: 5 }}>
+              <CoinbaseWalletLogo />
+            </div>
             <span>Create Wallet</span>
           </div>
         </Gradient>
